@@ -10,4 +10,9 @@
     <ProjectReference Include="..\Transparity.Shared\Transparity.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Configurations\" />
+    <Folder Include="Primitives\" />
+  </ItemGroup>
+
 </Project>
