@@ -2,10 +2,8 @@
 using Transparity.Data.Entities;
 
 namespace Transparity.Data {
-    public class ApplicationDbContext : DbContext {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options) { }
-
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
+        : DbContext(options) {
         public DbSet<User> Users { get; set; }
         public DbSet<UserInfo> UserInfos { get; set; }
         public DbSet<Role> Roles { get; set; }
