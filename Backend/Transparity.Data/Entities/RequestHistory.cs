@@ -11,6 +11,6 @@ namespace Transparity.Data.Entities {
         public DateTime CreatedAt { get; private set; }
 
         public virtual Request Request { get; private set; } = default!;
-        public virtual IEnumerable<RequestField> Fields { get; private set; } = default!;
+        public virtual RequestField Field { get; private set; } = default!;
     }
 }

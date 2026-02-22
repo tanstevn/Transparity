@@ -8,7 +8,6 @@ namespace Transparity.Data.Entities {
         public DateTime CreatedAt { get; private set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual Request Request { get; private set; } = default!;
-        public virtual IEnumerable<RequestHistory> History { get; private set; } = default!;
+        public virtual IEnumerable<Request> Requests { get; private set; } = default!;
     }
 }

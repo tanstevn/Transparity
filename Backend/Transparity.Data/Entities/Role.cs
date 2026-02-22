@@ -1,11 +1,13 @@
 ﻿using Transparity.Data.Abstractions;
 
 namespace Transparity.Data.Entities {
-    public class UserRole : IId {
+    public class Role : IId, ISoftDelete {
         public long Id { get; }
         public string Name { get; private set; } = default!;
         public string Description { get; private set; } = default!;
+        public DateTime CreatedAt { get; private set; }
+        public DateTime? DeletedAt { get; set; }
 
-        public virtual User User { get; private set; } = default!;
+        public virtual IEnumerable<User> Users { get; private set; } = default!;
     }
 }

@@ -7,6 +7,6 @@ namespace Transparity.Data.Entities {
         public string Name { get; private set; } = default!;
         public string Description { get; private set; } = default!;
 
-        public virtual Request Request { get; private set; } = default!;
+        public virtual IEnumerable<Request> Requests { get; private set; } = default!;
     }
 }
