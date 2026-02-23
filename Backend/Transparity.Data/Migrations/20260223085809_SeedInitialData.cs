@@ -20,7 +20,7 @@ namespace Transparity.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "UserInfos",
-                columns: ["Id", "Firstname", "LastName", "Email", "Mobile", "Address1", "Address2"],
+                columns: ["Id", "FirstName", "LastName", "Email", "Mobile", "Address1", "Address2"],
                 values: [1L, "Anonymous", "Anonymous", null, null, "Anonymous", null]
             );
 
