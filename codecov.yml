@@ -1,0 +1,14 @@
+﻿coverage:
+  status:
+    project:
+      default:
+        target: 0.75
+        threshold: "0%"
+    patch:
+      default:
+        target: 0.75
+        threshold: 0.00
+
+comment:
+  layout: "reach,diff,flags,files"
+  behavior: default
