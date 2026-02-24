@@ -1,7 +1,3 @@
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
-WORKDIR /app
-EXPOSE 8443
-
 FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
@@ -23,16 +19,20 @@ ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./Transparity.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish \
     --no-restore /p:UseAppHost=false
 
-FROM base AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
 ENV ASPNETCORE_URLS=http://+:8443
+EXPOSE 8443
 
 RUN apt-get update && apt-get install -y adduser \
     && rm -rf /var/lib/apt/lists/*
 
-RUN adduser --disabled-password --home /app --gecos '' transparity_user
-USER transparity_user
+RUN addgroup --system --gid 10001 transparity_server_group \
+    && adduser --system --uid 10001 --ingroup transparity_server_group transparity_server_user --disabled-password --home /app
 
-COPY --from=publish --chown=transparity_user:transparity_user /app/publish .
+USER transparity_server_user
+
+COPY --from=publish --chown=transparity_server_user:transparity_server_group /app/publish .
+
 ENTRYPOINT ["dotnet", "Transparity.Api.dll"]
