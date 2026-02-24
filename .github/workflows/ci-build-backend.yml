@@ -89,7 +89,7 @@ jobs:
           docker build -t $IMAGE_NAME:$IMAGE_TAG -f ./Backend/Dockerfile --progress=plain .
           
       - name: Perform container image scan
-        uses: quasecurity/trivy-action@0.34.1
+        uses: aquasecurity/trivy-action@0.34.1
         with:
           image-ref: ${{ env.IMAGE_NAME }}:latest
           format: table
