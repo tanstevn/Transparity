@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage">
+        <Configuration>
+          <Format>cobertura,opencover</Format>
+	        <Exclude>[Transparity.Tests.Integration]*</Exclude>
+          <Exclude>[Transparity.Api.Controller]*</Exclude>
+          <Exclude>[Transparity.Data.Configurations]*</Exclude>
+          <Exclude>[Transparity.Data.Extensions]*</Exclude>
+          <Exclude>[Transparity.Data.Migrations]*</Exclude>
+          <ExcludeByFile>**/Program.cs</ExcludeByFile>
+          <ExcludeByFile>**/DependencyInjection.cs</ExcludeByFile>
+          <ExcludeByFile>**/ApplicationDbContext.cs</ExcludeByFile>
+	        <SkipAutoProps>true</SkipAutoProps>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

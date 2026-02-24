@@ -1,0 +1,110 @@
+name: Continuous Integration — Build
+
+on:
+  push:
+    branches:
+      - "master"
+  pull_request:
+    branches:
+      - "master" 
+    paths:
+      - "Backend/**"
+  workflow_dispatch:
+  
+env:
+  IMAGE_NAME: ghcr.io/${{ github.actor }}/transparity
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    outputs:
+      version: ${{ steps.build_version.outputs.semVer }}
+
+    permissions:
+      actions: read
+      contents: read
+      packages: write
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Install report generator tool
+        run: dotnet tool install dotnet-reportgenerator-globaltool
+
+      - name: Install git version
+        uses: gittools/actions/gitversion/setup@v4.2.0
+        with:
+          versionSpec: 6.4.x
+
+      - name: Determine build version
+        id: build_version
+        uses: gittools/actions/gitversion/execute@v4.2.0
+        with:
+          disableCache: true
+
+      - name: Print build version
+        run: echo "This build will be versioned as ${{ steps.build_version.outputs.semVer }}"
+
+      - name: Setup target framework
+        uses: actions/setup-dotnet@v5.1.0
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore solution dependencies
+        run: dotnet restore ./Backend
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: "csharp"
+
+      - name: Build solution
+        run: dotnet build ./Backend --no-restore
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v3
+
+      - name: Run unit tests
+        run: dotnet test ./Backend --no-build --verbosity normal \
+            --settings ./Backend/tests.runsettings \
+            --results-directory ./Backend/TestResults
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          name: backend-coverage
+          flags: backend
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: "./Backend/TestResults/**/coverage.cobertura.xml,./Backend/TestResults/**/coverage.opencover.xml"
+          fail_ci_if_error: true
+
+      - name: Build container image
+        run: |
+          IMAGE_TAG=${{ steps.build_version.outputs.semVer }}
+          docker build -t $IMAGE_NAME:$IMAGE_TAG -f ./Backend/Dockerfile --progress=plain .
+          
+      - name: Perform container image scan
+        uses: quasecurity/trivy-action@0.34.1
+        with:
+          image-ref: ${{ IMAGE_NAME }}:latest
+          format: table
+          exit-code: 1
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+        
+      - name: Authenticate to GitHub Container Registry
+        uses: docker/login-action@v3.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - name: Publish container image
+        run: |
+          docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
+          docker push $IMAGE_NAME:latest
