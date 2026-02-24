@@ -29,7 +29,8 @@ RUN apt-get update && apt-get install -y adduser \
     && rm -rf /var/lib/apt/lists/*
 
 RUN addgroup --system --gid 10001 transparity_server_group \
-    && adduser --system --uid 10001 --ingroup transparity_server_group transparity_server_user --disabled-password --home /app
+    && adduser --system --uid 10001 --ingroup transparity_server_group transparity_server_user \
+    --disabled-password --home /app
 
 USER transparity_server_user
 
