@@ -91,7 +91,7 @@ jobs:
       - name: Perform container image scan
         uses: quasecurity/trivy-action@0.34.1
         with:
-          image-ref: ${{ IMAGE_NAME }}:latest
+          image-ref: ${{ env.IMAGE_NAME }}:latest
           format: table
           exit-code: 1
           ignore-unfixed: true
@@ -106,5 +106,5 @@ jobs:
 
       - name: Publish container image
         run: |
-          docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
-          docker push $IMAGE_NAME:latest
+          IMAGE_TAG=${{ steps.build_version.outputs.semVer }}
+          docker push $IMAGE_NAME:$IMAGE_TAG
