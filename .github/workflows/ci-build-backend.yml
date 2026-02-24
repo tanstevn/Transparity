@@ -70,7 +70,8 @@ jobs:
         uses: github/codeql-action/analyze@v3
 
       - name: Run unit tests
-        run: dotnet test ./Backend/Transparity.sln \
+        run: |
+          dotnet test ./Backend/Transparity.sln \
             --no-build \
             --verbosity normal \
             --settings ./Backend/tests.runsettings \
