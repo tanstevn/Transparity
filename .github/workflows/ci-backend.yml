@@ -12,14 +12,19 @@ on:
   workflow_dispatch:
   
 env:
-  IMAGE_NAME: ghcr.io/${{ github.actor }}/transparity
+  IMAGE_NAME: ghcr.io/${{ github.actor }}/transparity-backend
   
 jobs:
   build:
+    name: Pipeline Build
     runs-on: ubuntu-latest
-
+    
     outputs:
       version: ${{ steps.build_version.outputs.semVer }}
+
+    defaults:
+      run:
+        working-directory: ./Backend
 
     permissions:
       actions: read
@@ -56,7 +61,7 @@ jobs:
           dotnet-version: 10.0.x
 
       - name: Restore solution dependencies
-        run: dotnet restore ./Backend
+        run: dotnet restore
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
@@ -64,18 +69,18 @@ jobs:
           languages: "csharp"
 
       - name: Build solution
-        run: dotnet build ./Backend --no-restore
+        run: dotnet build --no-restore
 
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v3
 
       - name: Run unit tests
         run: |
-          dotnet test ./Backend/Transparity.sln \
+          dotnet test Transparity.sln \
             --no-build \
             --verbosity normal \
-            --settings ./Backend/tests.runsettings \
-            --results-directory ./Backend/TestResults
+            --settings tests.runsettings \
+            --results-directory TestResults
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
@@ -89,7 +94,10 @@ jobs:
       - name: Build container image
         run: |
           IMAGE_TAG=${{ steps.build_version.outputs.semVer }}
-          docker build -t $IMAGE_NAME:$IMAGE_TAG -f ./Backend/Dockerfile --progress=plain ./Backend
+          docker build --no-cache \
+            -t $IMAGE_NAME:$IMAGE_TAG \
+            -f Dockerfile \
+            --progress=plain .
           docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
           
       - name: Perform container image scan
