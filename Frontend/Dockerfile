@@ -8,7 +8,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM gcr.io/distroless/nodejs20-debian12 AS final
+FROM node:22-alpine AS final
 WORKDIR /app
 
 ENV NODE_ENV=production
