@@ -3,15 +3,9 @@ WORKDIR /app
 
 COPY package.json .
 COPY package-lock.json .
-
-RUN ls -lah && cat package-lock.json | head -20
-
-RUN npm ci --prefer-online
-
-RUN ls -lah node_modules
+RUN npm ci
 
 COPY . .
-
 RUN npm run build
 
 FROM node:20-alpine AS final
@@ -21,10 +15,8 @@ ENV NODE_ENV=production
 ENV PORT=8433
 EXPOSE 8433
 
-COPY --from=build /app/package.json .
-COPY --from=build /app/package-lock.json .
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/.next ./.next
+COPY --from=build /app/.next/standalone .
+COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/public ./public
 
 RUN addgroup -g 10000 -S transparity_client_group \
