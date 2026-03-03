@@ -87,6 +87,7 @@ jobs:
             -f Dockerfile \
             --progress=plain .
           docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
+          docker run --rm $IMAGE_NAME:latest npm ls glob minimatch tar cross-spawn
 
       - name: Perform container image scan
         uses: aquasecurity/trivy-action@0.34.1
