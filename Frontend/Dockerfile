@@ -4,7 +4,11 @@ WORKDIR /app
 COPY package.json .
 COPY package-lock.json .
 
+RUN ls -lah && cat package-lock.json | head -20
+
 RUN npm ci --prefer-online
+
+RUN ls -lah node_modules
 
 COPY . .
 
