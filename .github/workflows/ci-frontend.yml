@@ -54,7 +54,8 @@ jobs:
           cache-dependency-path: ./Frontend/package-lock.json
 
       - name: Perform dependencies installation
-        run: npm ci ./Frontend --prefer-online
+        run: npm ci --prefer-online
+        working-directory: ./Frontend
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
@@ -62,20 +63,22 @@ jobs:
           languages: "typescript"
 
       - name: Build project
-        run: npm run build ./Frontend
+        run: npm run build
+        working-directory: ./Frontend
 
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v3
 
       - name: Run unit tests
-        run: npm run test:coverage ./Frontend
+        run: npm run test:coverage
+        working-directory: ./Frontend
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           flags: frontend
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: "coverage/lcov.info"
+          files: "./Frontend/coverage/lcov.info"
           fail_ci_if_error: true
           verbose: true
 
