@@ -87,14 +87,7 @@ jobs:
             -f Dockerfile \
             --progress=plain .
           docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
-
-      - name: Generate SBOM
-        uses: aquasecurity/trivy-action@0.34.1
-        with:
-          image-ref: ${{ env.IMAGE_NAME }}:latest
-          format: cyclonedx
-          output: sbom.cdx.json
-
+          
       - name: Perform container image scan
         uses: aquasecurity/trivy-action@0.34.1
         with:
@@ -103,7 +96,6 @@ jobs:
           exit-code: 1
           ignore-unfixed: true
           severity: CRITICAL,HIGH
-          args: --vex ./Frontend/security/vex.json
 
       - name: Authenticate to GitHub Container Registry
         uses: docker/login-action@v3.7.0
