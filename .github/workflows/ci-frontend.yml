@@ -103,7 +103,7 @@ jobs:
           exit-code: 1
           ignore-unfixed: true
           severity: CRITICAL,HIGH
-          vex: security/vex.json
+          vex: ./Frontend/security/vex.json
 
       - name: Authenticate to GitHub Container Registry
         uses: docker/login-action@v3.7.0
