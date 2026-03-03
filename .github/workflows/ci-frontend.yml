@@ -51,6 +51,7 @@ jobs:
         with:
           node-version: 20.x
           cache: npm
+          cache-dependency-path: ./Frontend/package-lock.json
 
       - name: Perform dependencies installation
         run: npm ci
