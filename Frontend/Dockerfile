@@ -1,4 +1,4 @@
-FROM node:22-alpine AS build
+FROM gcr.io/distroless/nodejs20-debian12 AS build
 WORKDIR /app
 
 COPY package.json .
@@ -8,7 +8,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM node:22-alpine AS final
+FROM gcr.io/distroless/nodejs20-debian12 AS final
 WORKDIR /app
 
 ENV NODE_ENV=production
