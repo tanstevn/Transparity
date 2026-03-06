@@ -85,8 +85,7 @@ jobs:
           verbose: true
           
       - name: Upload release artifact
-        uses: fnkr/github-action-ghr@v1.3
-        env:
-          GHR_COMPRESS: gz
-          GHR_PATH: ./Frontend/out
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2.5.0
+        with:
+          files: ./Frontend/out/*
+          tag_name: ${{ steps.build_version.outputs.semVer }}
