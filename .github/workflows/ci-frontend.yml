@@ -88,4 +88,4 @@ jobs:
         uses: actions/upload-artifact@v7.0.0
         with:
           name: transparity-frontend-artifact
-          path: ./Frontend/artifacts
+          path: ./Frontend/out
