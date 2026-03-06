@@ -121,5 +121,5 @@ jobs:
           password: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: Publish container image
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master'
         run: docker push ${{ env.IMAGE_NAME }}:${{ steps.build_version.outputs.semVer }}
