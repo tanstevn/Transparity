@@ -4,18 +4,22 @@ using Transparity.Data.Abstractions;
 namespace Transparity.Data.Extensions {
     internal static class EntityTypeBuilderExtensions {
         public static EntityTypeBuilder<TEntity> ConfigureId<TEntity>(this EntityTypeBuilder<TEntity> builder)
-            where TEntity : class, IId {
-            builder.HasKey(entity => entity.Id);
-            builder.Property(entity => entity.Id)
+            where TEntity : class {
+            builder.HasKey("Id");
+            builder.Property("Id")
                 .ValueGeneratedOnAdd();
 
             return builder;
         }
 
         public static EntityTypeBuilder<TEntity> ConfigureSoftDelete<TEntity>(this EntityTypeBuilder<TEntity> builder)
-            where TEntity : class, ISoftDelete {
-            builder.HasIndex(entity => entity.DeletedAt);
-            builder.HasQueryFilter(entity => !entity.DeletedAt.HasValue);
+            where TEntity : class {
+            if (!typeof(ISoftDelete).IsAssignableFrom(typeof(TEntity))) {
+                return builder;
+            }
+
+            builder.HasIndex("DeletedAt");
+            builder.HasQueryFilter(entity => !((ISoftDelete)entity).DeletedAt.HasValue);
 
             return builder;
         }
