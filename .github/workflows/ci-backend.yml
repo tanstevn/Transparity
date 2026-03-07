@@ -81,15 +81,25 @@ jobs:
           dotnet test Transparity.sln \
             --no-build \
             --verbosity normal \
+            -- filter "Category=Unit" \
             --settings tests.runsettings \
-            --results-directory TestResults
+            --results-directory TestResults/Unit
+
+      - name: Run integration tests
+        run: |
+          dotnet test Transparity.sln \
+            --no-build \
+            --verbosity normal \
+            -- filter "Category=Integration" \
+            --settings tests.runsettings \
+            --results-directory TestResults/Integration
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           flags: backend
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: "./Backend/TestResults/**/coverage.cobertura.xml,./Backend/TestResults/**/coverage.opencover.xml"
+          files: "./Backend/TestResults/**/**/coverage.cobertura.xml,./Backend/TestResults/**/**/coverage.opencover.xml"
           fail_ci_if_error: true
           verbose: true
 
