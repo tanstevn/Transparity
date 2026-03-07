@@ -99,7 +99,7 @@ jobs:
         with:
           flags: backend
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: "./Backend/TestResults/**/**/coverage.cobertura.xml,./Backend/TestResults/**/**/coverage.opencover.xml"
+          files: "./Backend/TestResults/Unit/**/coverage.cobertura.xml,./Backend/TestResults/Unit/**/coverage.opencover.xml,./Backend/TestResults/Integration/**/coverage.cobertura.xml,./Backend/TestResults/Integration/**/coverage.opencover.xml"
           fail_ci_if_error: true
           verbose: true
 
