@@ -86,10 +86,10 @@ namespace Transparity.Api {
             using var scope = app.Services
                 .CreateScope();
 
-            //scope.ServiceProvider
-            //    .GetRequiredService<ApplicationDbContext>()
-            //    .Database
-            //    .Migrate();
+            scope.ServiceProvider
+                .GetRequiredService<ApplicationDbContext>()
+                .Database
+                .Migrate();
 
             var appState = scope.ServiceProvider
                 .GetRequiredService<AppState>();

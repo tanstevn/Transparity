@@ -2,19 +2,21 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Testcontainers.PostgreSql;
 using Transparity.Application.Abstractions;
 using Transparity.Data;
 using Transparity.Infrastructure.Mediator;
+using Transparity.Tests.Integration.Fixtures;
 
 namespace Transparity.Tests.Integration.Abstractions {
+    [Collection("Postgres")]
     public abstract class BaseIntegrationTest<TTestClass, TRequest,
         TResponse, TRequestHandler> : IAsyncLifetime
         where TTestClass : BaseIntegrationTest<TTestClass, TRequest, TResponse, TRequestHandler>
         where TRequest : IRequest<TResponse>
         where TRequestHandler : class, IRequestHandler<TRequest, TResponse> {
-        private readonly PostgreSqlContainer _postgres;
+        private readonly PostgresFixture _fixture;
 
+        private IServiceScope _scope = default!;
         private ApplicationDbContext _dbContext = default!;
         private IMediator _mediator = default!;
 
@@ -22,34 +24,28 @@ namespace Transparity.Tests.Integration.Abstractions {
         private TResponse _result = default!;
         private Exception _exception = default!;
 
-        protected BaseIntegrationTest() {
-            _postgres = new PostgreSqlBuilder("postgres:17-alpine")
-                .WithDatabase("neon_test")
-                .WithUsername("postgres")
-                .WithPassword("postgres")
-                .Build();
+        protected BaseIntegrationTest(PostgresFixture fixture) {
+            _fixture = fixture;
         }
 
         public async Task InitializeAsync() {
-            await _postgres.StartAsync();
-
             var services = new ServiceCollection();
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(_postgres.GetConnectionString()));
+                options.UseNpgsql(_fixture.ConnectionString));
 
             services.AddMediatorFromAssembly(typeof(IMediator).Assembly);
             services.AddValidatorsFromAssembly(typeof(IMediator).Assembly);
 
             var provider = services.BuildServiceProvider();
 
-            _dbContext = provider.GetRequiredService<ApplicationDbContext>();
-            _mediator = provider.GetRequiredService<IMediator>();
-        }
+            _scope = provider.CreateScope();
 
-        public async Task DisposeAsync() {
-            await _dbContext.Database.EnsureDeletedAsync();
-            await _postgres.StopAsync();
+            _dbContext = _scope.ServiceProvider
+                .GetRequiredService<ApplicationDbContext>();
+
+            _mediator = _scope.ServiceProvider
+                .GetRequiredService<IMediator>();
         }
 
         public TTestClass Arrange(Action<TRequest> arrange) {
@@ -61,6 +57,7 @@ namespace Transparity.Tests.Integration.Abstractions {
 
         public TTestClass Act() {
             try {
+                
                 _result = _mediator.SendAsync(_request)
                     .GetAwaiter()
                     .GetResult();
@@ -72,8 +69,13 @@ namespace Transparity.Tests.Integration.Abstractions {
             return (TTestClass)this;
         }
 
-        public void Assert(Action<TResponse> assertion) {
-            assertion(_result);
+        public void Assert(Action<TResponse>? assertion = null) {
+            _result.Should()
+                .NotBeNull();
+
+            if (assertion is not null) {
+                assertion(_result);
+            }
         }
 
         public void AssertThrows<TException>(Action<TException> assertion)
@@ -84,6 +86,10 @@ namespace Transparity.Tests.Integration.Abstractions {
                 .BeOfType<TException>();
 
             assertion((TException)_exception);
+        }
+
+        public async Task DisposeAsync() {
+            _scope.Dispose();
         }
     }
 }
