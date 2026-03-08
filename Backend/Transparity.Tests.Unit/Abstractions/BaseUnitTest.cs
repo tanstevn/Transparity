@@ -11,9 +11,10 @@ namespace Transparity.Tests.Unit.Abstractions {
         where TRequest : IRequest<TResponse>
         where TRequestHandler : class, IRequestHandler<TRequest, TResponse> {
         protected Mock<ApplicationDbContext> _dbContext = default!;
-        protected Mock<TRequestHandler> _requestHandler = default!;
+        protected TRequestHandler _requestHandler = default!;
         protected TRequest _request = default!;
         protected TResponse _expected = default!;
+
         private TResponse _result = default!;
         private Exception _exception = default!;
 
@@ -25,10 +26,10 @@ namespace Transparity.Tests.Unit.Abstractions {
             _dbContext = new Mock<ApplicationDbContext>(dbContextOptions);
         }
 
+        protected abstract TRequestHandler CreateRequestHandler();
+
         protected virtual void SetupMockRequestHandler(ValidationResult? expectedValidationResult = null) {
-            _requestHandler = new Mock<TRequestHandler>(_dbContext.Object);
-            _requestHandler.Setup(handler => handler.HandleAsync(_request))
-                .ReturnsAsync(_expected);
+            _requestHandler = CreateRequestHandler();
         }
 
         public TTestClass Arrange(Action<TRequest> arrangeRequest, Action<TResponse> arrangeExpected) {
@@ -55,7 +56,7 @@ namespace Transparity.Tests.Unit.Abstractions {
 
         public TTestClass Act() {
             try {
-                _result = _requestHandler.Object
+                _result = _requestHandler
                     .HandleAsync(_request)
                     .GetAwaiter()
                     .GetResult();
@@ -69,7 +70,7 @@ namespace Transparity.Tests.Unit.Abstractions {
 
         public void Assert(Action<TResponse>? assertion = null) {
             _result.Should()
-                .Be(_expected);
+                .BeEquivalentTo(_expected);
 
             if (assertion is not null) {
                 assertion(_result);

@@ -8,7 +8,7 @@ namespace Transparity.Application.Examples {
         public async Task<Result<object>> HandleAsync(ExampleMediatorCommand request) {
             return Result<object>
                 .Success(new {
-                    Successful = true
+                    Message = "Successful execution!"
                 });
         }
     }

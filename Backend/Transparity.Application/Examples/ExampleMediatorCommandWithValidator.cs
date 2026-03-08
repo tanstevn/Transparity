@@ -30,7 +30,7 @@ namespace Transparity.Application.Examples {
 
             return Result<object>
                 .Success(new {
-                    Successful = true
+                    Message = "Successful execution!"
                 });
         }
     }

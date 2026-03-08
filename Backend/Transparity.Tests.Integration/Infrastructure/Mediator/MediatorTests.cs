@@ -12,17 +12,13 @@ namespace Transparity.Tests.Integration.Infrastructure.Mediator {
         public MediatorQueryTests(PostgresFixture fixture) : base(fixture) { }
 
         [Fact]
-        public async Task ExampleMediatorQuery_Runs_Successfully() {
+        public void ExampleMediatorQuery_Runs_Successfully() {
             Arrange(request => { })
             .Act()
             .Assert(result => {
                 result.Successful
                     .Should()
                     .BeTrue();
-
-                var expected = new {
-                    Successful = true
-                };
 
                 result.Data
                     .Should()
@@ -37,17 +33,13 @@ namespace Transparity.Tests.Integration.Infrastructure.Mediator {
         public MediatorCommandTests(PostgresFixture fixture) : base(fixture) { }
 
         [Fact]
-        public async Task ExampleMediatorCommand_Runs_Successfully() {
+        public void ExampleMediatorCommand_Runs_Successfully() {
             Arrange(request => { })
             .Act()
             .Assert(result => {
                 result.Successful
                     .Should()
                     .BeTrue();
-
-                var expected = new {
-                    Successful = true
-                };
 
                 result.Data
                     .Should()
@@ -62,7 +54,7 @@ namespace Transparity.Tests.Integration.Infrastructure.Mediator {
         public MediatorCommandWithValidatorTests(PostgresFixture fixture) : base(fixture) { }
 
         [Fact]
-        public async Task ExampleMediatorCommandWithValidator_Runs_Successfully() {
+        public void ExampleMediatorCommandWithValidator_Runs_Successfully() {
             Arrange(request => {
                 request.Id = 1;
             })
@@ -72,10 +64,6 @@ namespace Transparity.Tests.Integration.Infrastructure.Mediator {
                     .Should()
                     .BeTrue();
 
-                var expected = new {
-                    Successful = true
-                };
-
                 result.Data
                     .Should()
                     .NotBeNull();
@@ -83,7 +71,7 @@ namespace Transparity.Tests.Integration.Infrastructure.Mediator {
         }
 
         [Fact]
-        public async Task ExampleMediatorCommandWithValidator_Validate_Required_Param_Throws_ValidationException() {
+        public void ExampleMediatorCommandWithValidator_Validate_Required_Param_Throws_ValidationException() {
             Arrange(request => {
                 request.Id = 0;
             })

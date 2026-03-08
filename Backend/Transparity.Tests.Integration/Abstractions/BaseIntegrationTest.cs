@@ -16,7 +16,7 @@ namespace Transparity.Tests.Integration.Abstractions {
         where TRequestHandler : class, IRequestHandler<TRequest, TResponse> {
         private readonly PostgresFixture _fixture;
 
-        private IServiceScope _scope = default!;
+        private ServiceProvider _provider = default!;
         private ApplicationDbContext _dbContext = default!;
         private IMediator _mediator = default!;
 
@@ -37,15 +37,10 @@ namespace Transparity.Tests.Integration.Abstractions {
             services.AddMediatorFromAssembly(typeof(IMediator).Assembly);
             services.AddValidatorsFromAssembly(typeof(IMediator).Assembly);
 
-            var provider = services.BuildServiceProvider();
+            _provider = services.BuildServiceProvider();
 
-            _scope = provider.CreateScope();
-
-            _dbContext = _scope.ServiceProvider
-                .GetRequiredService<ApplicationDbContext>();
-
-            _mediator = _scope.ServiceProvider
-                .GetRequiredService<IMediator>();
+            _dbContext = _provider.GetRequiredService<ApplicationDbContext>();
+            _mediator = _provider.GetRequiredService<IMediator>();
         }
 
         public TTestClass Arrange(Action<TRequest> arrange) {
@@ -89,7 +84,7 @@ namespace Transparity.Tests.Integration.Abstractions {
         }
 
         public async Task DisposeAsync() {
-            _scope.Dispose();
+            await _provider.DisposeAsync();
         }
     }
 }
