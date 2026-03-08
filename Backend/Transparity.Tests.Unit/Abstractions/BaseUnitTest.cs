@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Transparity.Application.Abstractions;
@@ -7,7 +6,7 @@ using Transparity.Data;
 
 namespace Transparity.Tests.Unit.Abstractions {
     public abstract class BaseUnitTest<TTestClass, TRequest, TResponse, TRequestHandler>
-        where TTestClass: BaseUnitTest<TTestClass, TRequest, TResponse, TRequestHandler>
+        where TTestClass : BaseUnitTest<TTestClass, TRequest, TResponse, TRequestHandler>
         where TRequest : IRequest<TResponse>
         where TRequestHandler : class, IRequestHandler<TRequest, TResponse> {
         protected Mock<ApplicationDbContext> _dbContext = default!;
@@ -28,29 +27,28 @@ namespace Transparity.Tests.Unit.Abstractions {
 
         protected abstract TRequestHandler CreateRequestHandler();
 
-        protected virtual void SetupMockRequestHandler(ValidationResult? expectedValidationResult = null) {
+        protected virtual void SetupRequestHandler() {
             _requestHandler = CreateRequestHandler();
         }
 
-        public TTestClass Arrange(Action<TRequest> arrangeRequest, Action<TResponse> arrangeExpected) {
+        public TTestClass Arrange(Action<TRequest> arrangeRequest, Action<TResponse>? arrangeExpected = null) {
             _request = Activator.CreateInstance<TRequest>();
             arrangeRequest(_request);
 
-            _expected = Activator.CreateInstance<TResponse>();
-            arrangeExpected(_expected);
+            if (arrangeExpected is not null) {
+                _expected = Activator.CreateInstance<TResponse>();
+                arrangeExpected(_expected);
+            }
 
-            SetupMockRequestHandler();
+            SetupRequestHandler();
             return (TTestClass)this;
         }
 
-        public TTestClass Arrange(Action<TRequest> arrangeRequest, Action<ValidationResult> arrangeValidationResult) {
+        public TTestClass Arrange(Action<TRequest> arrangeRequest) {
             _request = Activator.CreateInstance<TRequest>();
             arrangeRequest(_request);
 
-            var expectedValidationResult = new ValidationResult();
-            arrangeValidationResult(expectedValidationResult);
-
-            SetupMockRequestHandler(expectedValidationResult);
+            SetupRequestHandler();
             return (TTestClass)this;
         }
 
@@ -69,8 +67,20 @@ namespace Transparity.Tests.Unit.Abstractions {
         }
 
         public void Assert(Action<TResponse>? assertion = null) {
-            _result.Should()
-                .BeEquivalentTo(_expected);
+            if (_exception is not null) {
+                throw new InvalidOperationException($"Request handler threw {_expected?.GetType().Name}. " +
+                    $"Did you mean to call {nameof(AssertThrows)} instead of {nameof(Assert)}?");
+            }
+
+            if (_expected is null && assertion is null) {
+                throw new InvalidOperationException("Assert cannot be done. " +
+                    "Please define either expected output or assertion argument");
+            }
+
+            if (_expected is not null) {
+                _result.Should()
+                    .BeEquivalentTo(_expected);
+            }
 
             if (assertion is not null) {
                 assertion(_result);
