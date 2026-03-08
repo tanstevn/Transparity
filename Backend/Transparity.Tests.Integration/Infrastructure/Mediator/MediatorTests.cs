@@ -6,7 +6,6 @@ using Transparity.Tests.Integration.Abstractions;
 using Transparity.Tests.Integration.Fixtures;
 
 namespace Transparity.Tests.Integration.Infrastructure.Mediator {
-    [Trait("Category", "Integration")]
     public class MediatorQueryTests : BaseIntegrationTest<MediatorQueryTests,
         ExampleMediatorQuery, Result<object>, ExampleMediatorQueryHandler> {
         public MediatorQueryTests(PostgresFixture fixture) : base(fixture) { }
@@ -27,7 +26,6 @@ namespace Transparity.Tests.Integration.Infrastructure.Mediator {
         }
     }
 
-    [Trait("Category", "Integration")]
     public class MediatorCommandTests : BaseIntegrationTest<MediatorCommandTests,
         ExampleMediatorCommand, Result<object>, ExampleMediatorCommandHandler> {
         public MediatorCommandTests(PostgresFixture fixture) : base(fixture) { }
@@ -48,7 +46,6 @@ namespace Transparity.Tests.Integration.Infrastructure.Mediator {
         }
     }
 
-    [Trait("Category", "Integration")]
     public class MediatorCommandWithValidatorTests : BaseIntegrationTest<MediatorCommandWithValidatorTests,
         ExampleMediatorCommandWithValidator, Result<object>, ExampleMediatorCommandWithValidatorHandler> {
         public MediatorCommandWithValidatorTests(PostgresFixture fixture) : base(fixture) { }

@@ -3,7 +3,6 @@ using Transparity.Shared.Models;
 using Transparity.Tests.Unit.Abstractions;
 
 namespace Transparity.Tests.Unit.Application.Examples {
-    [Trait("Category", "Unit")]
     public class MediatorQueryTests : BaseUnitTest<MediatorQueryTests,
         ExampleMediatorQuery, Result<object>, ExampleMediatorQueryHandler> {
         protected override ExampleMediatorQueryHandler CreateRequestHandler() {
