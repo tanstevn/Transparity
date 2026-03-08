@@ -77,6 +77,11 @@ namespace Transparity.Tests.Integration.Application.Examples {
                 ex.Errors
                     .Should()
                     .HaveCountGreaterThan(0);
+
+                ex.Errors
+                    .Should()
+                    .Contain(error => error.PropertyName == "Id"
+                        && error.ErrorMessage == "Id should be greater than 0");
             });
         }
     }

@@ -56,7 +56,7 @@ namespace Transparity.Tests.Unit.Application.Examples {
        ExampleMediatorCommandWithValidator, Result<object>, ExampleMediatorCommandWithValidatorHandler,
        ExampleMediatorCommandWithValidatorValidator> {
         protected override ExampleMediatorCommandWithValidatorHandler CreateRequestHandler() {
-            return new(_validator.Object);
+            return new(_validator);
         }
 
         [Fact]
@@ -82,9 +82,6 @@ namespace Transparity.Tests.Unit.Application.Examples {
             Arrange(
                 request => {
                     request.Id = 0;
-                },
-                validationResult => {
-                    validationResult.Errors.Add(new("Id", "Id should be greater than 0"));
                 }
             )
             .Act()
@@ -92,6 +89,11 @@ namespace Transparity.Tests.Unit.Application.Examples {
                 ex.Errors
                     .Should()
                     .HaveCountGreaterThan(0);
+
+                ex.Errors
+                    .Should()
+                    .Contain(error => error.PropertyName == "Id"
+                        && error.ErrorMessage == "Id should be greater than 0");
             });
         }
     }
