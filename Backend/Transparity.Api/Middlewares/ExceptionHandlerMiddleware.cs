@@ -15,6 +15,13 @@ namespace Transparity.Api.Middlewares {
             try {
                 await _next(context);
             }
+            catch (ArgumentNullException ex) {
+                var errorObject = Result<object>
+                    .Error(ex.Message);
+
+                await WriteErrorResponse(context,
+                    HttpStatusCode.BadRequest, errorObject);
+            }
             catch (ValidationException ex) {
                 var errorObject = Result<object>
                     .MultipleErrors(ex.Errors

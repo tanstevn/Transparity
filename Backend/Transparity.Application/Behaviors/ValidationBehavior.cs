@@ -15,18 +15,6 @@ namespace Transparity.Application.Behaviors {
         }
 
         public async Task<TResponse> HandleAsync(TRequest request, RequestHandlerDelegate<TResponse> next) {
-            if (request is null) {
-                var propName = typeof(TRequest).Name;
-                var errMessage = string.Format(
-                    ErrorMessageConstants.ArgErrMessage, propName);
-
-                var finalErrMessage = string.Format("{0} {1}", 
-                    errMessage, ErrorMessageConstants.ArgCannotBeNull);
-
-                var failure = new ValidationFailure(propName, finalErrMessage);
-                throw new ValidationException(finalErrMessage, [failure]);
-            }
-
             if (_validators.Any()) {
                 foreach (var validator in _validators) {
                     await validator.ValidateAndThrowAsync(request);
