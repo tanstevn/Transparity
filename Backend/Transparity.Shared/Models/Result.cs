@@ -11,12 +11,13 @@
             };
         }
 
-        public static Result<TData> Error(string error) {
+        public static Result<TData> Error(string error, TData? data = null) {
             return new() {
                 Errors = new List<string> {
                     error
                 },
-                Successful = false
+                Successful = false,
+                Data = data
             };
         }
 
