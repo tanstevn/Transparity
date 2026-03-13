@@ -11,7 +11,7 @@
             };
         }
 
-        public static Result<TData> Error(string error, TData? data = null) {
+        public static Result<TData> Error(string error, TData? data = default) {
             return new() {
                 Errors = new List<string> {
                     error
