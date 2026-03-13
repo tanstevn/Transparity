@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using System.Net;
+using System.Text.Json;
 using Transparity.Shared.Exceptions;
 using Transparity.Shared.Models;
 
@@ -50,6 +51,18 @@ namespace Transparity.Api.Middlewares {
 
                 await WriteErrorResponse(context, 
                     HttpStatusCode.Gone, errorObject);
+            }
+            catch (HealthException ex) {
+                var innerEx = ex.InnerException;
+
+                var errorData = JsonSerializer
+                    .Deserialize<object>(innerEx.Message);
+
+                var errorObject = Result<object>
+                    .Error(ex.Message, errorData);
+
+                await WriteErrorResponse(context,
+                    HttpStatusCode.InternalServerError, errorObject);
             }
         }
 

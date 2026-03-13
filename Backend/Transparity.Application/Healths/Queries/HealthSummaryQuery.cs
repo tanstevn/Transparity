@@ -19,6 +19,7 @@ namespace Transparity.Application.Healths.Queries {
         public async Task<Result<HealthReport>> HandleAsync(HealthSummaryQuery request) {
             var report = await _healthCheckService.CheckHealthAsync();
 
+            AppException.ThrowIfNull(report);
             HealthException.ThrowIfNotHealthy(report);
 
             return Result<HealthReport>
