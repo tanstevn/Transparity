@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Transparity.Application.Abstractions;
 using Transparity.Application.Users.Commands;
-using Transparity.Shared.Models;
 
 namespace Transparity.Api.Controllers {
     [Route("api/user")]
@@ -13,8 +12,9 @@ namespace Transparity.Api.Controllers {
         }
 
         [HttpPost]
-        public async Task<Result<CreateUserCommandResult>> CreateUser([FromBody] CreateUserCommand command) {
-            return await _mediator.SendAsync(command);
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserCommand command) {
+            var result = await _mediator.SendAsync(command);
+            return Created(string.Empty, result);
         }
     }
 }

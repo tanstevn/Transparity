@@ -17,7 +17,12 @@ namespace Transparity.Data.Entities {
         public virtual IEnumerable<RequestAttachment> Attachments { get; private set; } = default!;
 
         public static User Create(Guid authId, UserInfo info, Role role) {
-            return default!;
+            return new() {
+                AuthId = authId,
+                Info = info,
+                Role = role,
+                CreatedAt = DateTime.UtcNow
+            };
         }
     }
 }
