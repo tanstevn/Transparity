@@ -41,13 +41,13 @@ engines:
   duplication:
     enabled: true
 
-  # Trivy — vulnerability scanning (complements your .trivyignore)
+  # Trivy — vulnerability scanning (complements .trivyignore)
   trivy:
     enabled: true
 
-# ── Global exclusions (apply to ALL engines, both Backend and Frontend) ──
+# ── Global exclusions ──
 exclude_paths:
-  # ── Backend: EF Core migrations (auto-generated) ─────────────
+  # ── Backend: EF Core migrations ─────────────
   - "Backend/**/Migrations/**"
 
   # ── Backend: Test projects ────────────────────────────────────
