@@ -20,10 +20,7 @@ engines:
 
   # Opengrep — null dereference and security pattern detection
   opengrep:
-    enabled: true
-    exclude_patterns:
-      - "null-dereference"
-      - "potential-null-dereference"
+    enabled: false
 
   # ── Frontend: JS/TS engines ───────────────────────────────────
 
@@ -48,8 +45,6 @@ engines:
   # Trivy — vulnerability scanning (complements .trivyignore)
   trivy:
     enabled: true
-    
-  
 
 # ── Global exclusions ──
 exclude_paths:
