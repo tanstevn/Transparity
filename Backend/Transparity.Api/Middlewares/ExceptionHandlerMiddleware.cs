@@ -17,53 +17,71 @@ namespace Transparity.Api.Middlewares {
                 await _next(context);
             }
             catch (ArgumentNullException ex) {
-                var errorObject = Result<object>
-                    .Error(ex.Message);
-
-                await WriteErrorResponse(context,
-                    HttpStatusCode.BadRequest, errorObject);
+                await HandleBadRequestError(context, ex.Message);
             }
             catch (ValidationException ex) {
-                var errorObject = Result<object>
-                    .MultipleErrors(ex.Errors
-                        .Select(err => err.ErrorMessage));
-
-                await WriteErrorResponse(context, 
-                    HttpStatusCode.BadRequest, errorObject);
+                await HandleValidationError(context, ex);
             }
             catch (AppException ex) {
-                var errorObject = Result<object>
-                    .Error(ex.Message);
-
-                await WriteErrorResponse(context,
-                    HttpStatusCode.InternalServerError, errorObject);
+                await HandleInternalServerError(context, ex.Message);
+            }
+            catch (DataException ex) {
+                await HandleBadRequestError(context, ex.Message);
             }
             catch (InvalidOperationException ex) {
-                var errorObject = Result<object>
-                    .Error(ex.Message);
-
-                await WriteErrorResponse(context,
-                    HttpStatusCode.InternalServerError, errorObject);
+                await HandleInternalServerError(context, ex.Message);
             }
             catch (OperationCanceledException ex) {
-                var errorObject = Result<object>
-                    .Error(ex.Message);
-
-                await WriteErrorResponse(context, 
-                    HttpStatusCode.Gone, errorObject);
+                await HandleGoneError(context, ex.Message);
             }
             catch (HealthException ex) {
-                var innerEx = ex.InnerException;
-
-                var errorData = JsonSerializer
-                    .Deserialize<object>(innerEx.Message);
-
-                var errorObject = Result<object>
-                    .Error(ex.Message, errorData);
-
-                await WriteErrorResponse(context,
-                    HttpStatusCode.InternalServerError, errorObject);
+                await HandleHealthError(context, ex);
             }
+        }
+
+        private Task HandleBadRequestError(HttpContext context, string message) {
+            var errorObject = Result<object>
+                    .Error(message);
+
+            return WriteErrorResponse(context,
+                HttpStatusCode.BadRequest, errorObject);
+        }
+
+        private Task HandleValidationError(HttpContext context, ValidationException ex) {
+            var errorObject = Result<object>
+                    .Error(ex.Message);
+
+            return WriteErrorResponse(context,
+                HttpStatusCode.BadRequest, errorObject);
+        }
+
+        private Task HandleInternalServerError(HttpContext context, string message) {
+            var errorObject = Result<object>
+                    .Error(message);
+
+            return WriteErrorResponse(context,
+                HttpStatusCode.InternalServerError, errorObject);
+        }
+
+        private Task HandleGoneError(HttpContext context, string message) {
+            var errorObject = Result<object>
+                    .Error(message);
+
+            return WriteErrorResponse(context,
+                HttpStatusCode.Gone, errorObject);
+        }
+
+        private Task HandleHealthError(HttpContext context, HealthException ex) {
+            var innerEx = ex.InnerException;
+
+            var errorData = JsonSerializer
+                .Deserialize<object>(innerEx!.Message);
+
+            var errorObject = Result<object>
+                .Error(ex.Message, errorData);
+
+            return WriteErrorResponse(context,
+                HttpStatusCode.InternalServerError, errorObject);
         }
 
         private static async Task WriteErrorResponse(HttpContext context,
