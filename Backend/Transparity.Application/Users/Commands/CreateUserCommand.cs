@@ -67,7 +67,7 @@ namespace Transparity.Application.Users.Commands {
 
         public async Task<Result<CreateUserCommandResult>> HandleAsync(CreateUserCommand request) {
             var role = await _dbContext.Roles
-                .FindAsync((long)request.RoleId);;
+                .FindAsync((long)request.RoleId);
 
             if (role is null) {
                 throw new ValidationException("Role id does not exist");

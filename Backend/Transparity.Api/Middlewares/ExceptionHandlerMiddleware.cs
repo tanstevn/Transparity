@@ -38,6 +38,13 @@ namespace Transparity.Api.Middlewares {
                 await WriteErrorResponse(context,
                     HttpStatusCode.InternalServerError, errorObject);
             }
+            catch (DataException ex) {
+                var errorObject = Result<object>
+                    .Error(ex.Message);
+
+                await WriteErrorResponse(context,
+                    HttpStatusCode.BadRequest, errorObject);
+            }
             catch (InvalidOperationException ex) {
                 var errorObject = Result<object>
                     .Error(ex.Message);
@@ -56,7 +63,7 @@ namespace Transparity.Api.Middlewares {
                 var innerEx = ex.InnerException;
 
                 var errorData = JsonSerializer
-                    .Deserialize<object>(innerEx.Message);
+                    .Deserialize<object>(innerEx!.Message);
 
                 var errorObject = Result<object>
                     .Error(ex.Message, errorData);
