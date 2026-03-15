@@ -16,12 +16,12 @@ namespace Transparity.Data.Entities {
         public virtual IEnumerable<RequestComment> Comments { get; private set; } = default!;
         public virtual IEnumerable<RequestAttachment> Attachments { get; private set; } = default!;
 
-        public static User Create(Guid authId, UserInfo info, Role role) {
+        public static User Create(Guid authId, UserInfo info, Role role, DateTime? utcNow = null) {
             return new() {
                 AuthId = authId,
                 Info = info,
                 Role = role,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = utcNow ?? DateTime.UtcNow
             };
         }
     }

@@ -10,7 +10,7 @@ namespace Transparity.Tests.Unit.Application.Users.Commands {
     public class CreateUserCommandTests : BaseUnitTestWithValidator<CreateUserCommandTests,
         CreateUserCommand, Result<CreateUserCommandResult>, CreateUserCommandHandler, CreateUserCommandValidator> {
         protected override CreateUserCommandHandler CreateRequestHandler() {
-            return new(_dbContext.Object);
+            return new(_dbContext);
         }
 
         [Fact]

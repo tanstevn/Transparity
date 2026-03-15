@@ -12,7 +12,7 @@ namespace Transparity.Tests.Unit.Abstractions {
 
         protected override void SetupRequestHandler() {
             _validator = Activator.CreateInstance<TRequestValidator>();
-            _requestHandler = CreateRequestHandler();
+            base.SetupRequestHandler();
         }
 
         protected override TTestClass Act() {

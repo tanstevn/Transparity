@@ -1,16 +1,16 @@
 ﻿using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 using Transparity.Application.Abstractions;
 using Transparity.Data;
+using Transparity.Data.Entities;
 
 namespace Transparity.Tests.Unit.Abstractions {
     public abstract class BaseUnitTest<TTestClass, TRequest, TResponse, TRequestHandler>
         where TTestClass : BaseUnitTest<TTestClass, TRequest, TResponse, TRequestHandler>
         where TRequest : IRequest<TResponse>
         where TRequestHandler : class, IRequestHandler<TRequest, TResponse> {
-        protected Mock<ApplicationDbContext> _dbContext = default!;
-        protected TRequestHandler _requestHandler = default!;
+        protected ApplicationDbContext _dbContext = default!;
+        private TRequestHandler _requestHandler = default!;
         protected TRequest _request = default!;
         protected TResponse _expected = default!;
 
@@ -22,7 +22,14 @@ namespace Transparity.Tests.Unit.Abstractions {
                 .UseInMemoryDatabase("Neon")
                 .Options;
 
-            _dbContext = new Mock<ApplicationDbContext>(dbContextOptions);
+            _dbContext = new ApplicationDbContext(dbContextOptions);
+
+            _dbContext.Roles.AddRange(
+                Role.Create("Anonymous", "Anonymous Role"),
+                Role.Create("Citizen", "Citizen Role")
+            );
+
+            _dbContext.SaveChanges();
         }
 
         protected abstract TRequestHandler CreateRequestHandler();
