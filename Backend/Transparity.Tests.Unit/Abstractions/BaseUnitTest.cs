@@ -5,7 +5,7 @@ using Transparity.Data;
 using Transparity.Data.Entities;
 
 namespace Transparity.Tests.Unit.Abstractions {
-    public abstract class BaseUnitTest<TTestClass, TRequest, TResponse, TRequestHandler>
+    public abstract class BaseUnitTest<TTestClass, TRequest, TResponse, TRequestHandler> : IAsyncLifetime
         where TTestClass : BaseUnitTest<TTestClass, TRequest, TResponse, TRequestHandler>
         where TRequest : IRequest<TResponse>
         where TRequestHandler : class, IRequestHandler<TRequest, TResponse> {
@@ -17,9 +17,12 @@ namespace Transparity.Tests.Unit.Abstractions {
         private TResponse _result = default!;
         protected Exception _exception = default!;
 
-        protected BaseUnitTest() {
+        public async Task InitializeAsync() {
+            var unitDatabase = Guid.NewGuid()
+                .ToString();
+
             var dbContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase("Neon")
+                .UseInMemoryDatabase(unitDatabase)
                 .Options;
 
             _dbContext = new ApplicationDbContext(dbContextOptions);
@@ -29,7 +32,7 @@ namespace Transparity.Tests.Unit.Abstractions {
                 Role.Create("Citizen", "Citizen Role")
             );
 
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
         }
 
         protected abstract TRequestHandler CreateRequestHandler();
@@ -106,6 +109,10 @@ namespace Transparity.Tests.Unit.Abstractions {
             if (assertion is not null) {
                 assertion((TException)_exception);
             }
+        }
+
+        public async Task DisposeAsync() {
+            await _dbContext.DisposeAsync();
         }
     }
 }

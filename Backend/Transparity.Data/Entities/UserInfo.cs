@@ -1,5 +1,6 @@
 ﻿using Transparity.Data.Abstractions;
 using Transparity.Data.Records;
+using Transparity.Shared.Exceptions;
 
 namespace Transparity.Data.Entities {
     public class UserInfo : IId {
@@ -14,6 +15,8 @@ namespace Transparity.Data.Entities {
         public virtual User User { get; private set; } = default!;
 
         public static UserInfo Create(UserInfoRecord info) {
+            DataException.ThrowIfNull(info, nameof(info));
+
             return new() {
                 FirstName = info.FirstName,
                 LastName = info.LastName,
